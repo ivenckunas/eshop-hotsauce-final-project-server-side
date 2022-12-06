@@ -30,7 +30,6 @@ module.exports = {
     const comparedPsw = await bcrypt.compare(password, userExists.hashedPsw)
     if (comparedPsw) {
       req.session.user = email
-      console.log('req.session.user ===', req.session.user);
       res.send({ error: false, message: 'logged in ok', data: userExists })
     }
 
