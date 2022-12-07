@@ -2,19 +2,22 @@ const userSchema = require('../schemas/userSchema');
 const bcrypt = require('bcrypt');
 const { uid } = require('uid');
 const { MongoClient } = require('mongodb');
+const { generateToken } = require('../utils/generateToken');
 const client = new MongoClient(process.env.MONGO_KEY);
 
 module.exports = {
   register: async (req, res) => {
-    console.log(req.body)
     const { email, password } = req.body;
+
+    // check if user already registered
+
     const userExists = await userSchema.findOne({ email });
     if (userExists) {
       res.send({ error: true, message: 'user already exists', data: null });
       return
     }
 
-    // JEIGU NERASTAS USERIS, REGISTRUOJAM NAUJA
+    // if this is new user hash password and register new user with hashed password
 
     const hashedPsw = await bcrypt.hash(password, 10)
     const secret = uid(30);
@@ -25,12 +28,18 @@ module.exports = {
 
   login: async (req, res) => {
     const { email, password } = req.body;
+
+    // check if users exists in database
+
     const userExists = await userSchema.findOne({ email });
     if (!userExists) return res.send({ error: true, message: 'user does not exist. Please register first', data: null });
+
+    // compare hashed password with password input
+
     const comparedPsw = await bcrypt.compare(password, userExists.hashedPsw)
     if (comparedPsw) {
-      req.session.user = email
-      res.send({ error: false, message: 'logged in ok', data: userExists })
+      const token = generateToken(userExists)
+      res.send({ error: false, message: 'logged in ok', data: userExists, token: token })
     }
 
   },
@@ -45,7 +54,6 @@ module.exports = {
       res.send({ error: false, message: 'is admin', data: null })
     } else {
       res.send({ error: true, message: 'not admin', data: null })
-
     }
   },
   logout: (req, res) => {
