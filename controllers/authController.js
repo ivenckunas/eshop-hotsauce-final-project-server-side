@@ -9,11 +9,11 @@ module.exports = {
   register: async (req, res) => {
     const { email, password } = req.body;
 
-    // check if user already registered
+    // check if user is already registered
 
     const userExists = await userSchema.findOne({ email });
     if (userExists) {
-      res.send({ error: true, message: 'user already exists', data: null });
+      res.send({ error: true, message: 'User already exists', data: null });
       return
     }
 
@@ -23,7 +23,7 @@ module.exports = {
     const secret = uid(30);
     const newUser = new userSchema({ email, hashedPsw, secret });
     await newUser.save();
-    res.send({ error: false, message: 'registered successfully', data: newUser })
+    res.send({ error: false, message: 'Registered successfully', data: newUser })
   },
 
   login: async (req, res) => {
@@ -32,7 +32,7 @@ module.exports = {
     // check if users exists in database
 
     const userExists = await userSchema.findOne({ email });
-    if (!userExists) return res.send({ error: true, message: 'user does not exist. Please register first', data: null });
+    if (!userExists) return res.send({ error: true, message: 'User does not exist. Please register first', data: null });
 
     // compare hashed password with password input
 
@@ -40,6 +40,10 @@ module.exports = {
     if (comparedPsw) {
       const token = generateToken(userExists)
       res.send({ error: false, message: 'logged in ok', data: userExists, token: token })
+    }
+    else {
+      res.send({ error: false, message: 'Bad credentials', data: null })
+
     }
 
   },
