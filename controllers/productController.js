@@ -19,12 +19,16 @@ module.exports = {
     res.send({ error: false, message: 'single product to update', data: singleProduct })
   },
   updateProduct: async (req, res) => {
-    console.log(req.body)
     const { title, image, price, info } = req.body
     const id = req.body.id.id
-    console.log('id ===', id);
     const updatedProduct = await productSchema.findOneAndUpdate({ _id: id }, { image: image, title: title, price: price, info: info })
     res.send({ error: false, message: 'product updated', data: updatedProduct })
+  },
+  deleteProduct: async (req, res) => {
+    const { id } = req.body
+    console.log('id ===', id);
+    const singleProduct = await productSchema.findByIdAndDelete({ _id: id })
+    res.send({ error: false, message: 'product deleted', data: null })
   }
 }
 
