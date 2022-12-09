@@ -25,7 +25,6 @@ module.exports = {
     await newUser.save();
     res.send({ error: false, message: 'Registered successfully', data: newUser })
   },
-
   login: async (req, res) => {
     const { email, password } = req.body;
 
@@ -50,15 +49,6 @@ module.exports = {
   authSession: (req, res) => {
     const { user } = req.session
     res.send({ error: !(!!user) })
-  },
-  authAdmin: async (req, res) => {
-    const { id } = req.body;
-    const userExists = await userSchema.findOne({ _id: id });
-    if (id && userExists.isAdmin === true) {
-      res.send({ error: false, message: 'is admin', data: null })
-    } else {
-      res.send({ error: true, message: 'not admin', data: null })
-    }
   },
   logout: (req, res) => {
     req.session.destroy();
