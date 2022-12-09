@@ -30,7 +30,6 @@ module.exports = (io) => {
 
 
     socket.on('updateProduct', async (data) => {
-
       const { title, image, price, info } = data
       const id = data.id.id
       const updatedProduct = await productSchema.findOneAndUpdate({ _id: id }, { image: image, title: title, price: price, info: info })
@@ -53,14 +52,12 @@ module.exports = (io) => {
 
     socket.on('searchProducts', async (data) => {
       const searchWord = data;
-
       const productsArr = await productSchema.find()
-
       const sorted = productsArr.filter((element) => element.title.toLowerCase().includes(searchWord));
-
       io.to(socket.id).emit('searchProducts', sorted)
-
     })
+
+
 
   })
 }
