@@ -29,6 +29,10 @@ module.exports = {
     console.log('id ===', id);
     const singleProduct = await productSchema.findByIdAndDelete({ _id: id })
     res.send({ error: false, message: 'product deleted', data: null })
-  }
+  },
+  // updateReviews: async (req, res) => {
+  //   const reviewToProduct = await productSchema.findOneAndUpdate({ _id: req.body.addReviewTo }, { $push: { reviews: { author: req.body.author, text: req.body.reviewText } } })
+  //   res.send({ error: false, message: 'product reviews updated', data: reviewToProduct })
+  // }
 }
 

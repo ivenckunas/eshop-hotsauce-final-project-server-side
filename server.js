@@ -1,15 +1,24 @@
 require('dotenv').config();
 const express = require('express');
+const app = express();
 const colors = require('colors');
 const cors = require('cors');
 const mongoose = require("mongoose")
 const authRouter = require('./router/authRouter')
 const productRouter = require('./router/productRouter')
 const session = require("express-session");
+const socketRouter = require('./router/socketRouter');
+const http = require('http').createServer(app);
+const socketIo = require('socket.io');
 
-const app = express()
 
 const PORT = process.env.PORT || 5000
+
+const io = socketIo(http, {
+  cors: {
+    origin: 'http://localhost:3000',
+  },
+});
 
 app.use(cors())
 app.use(express.json())
@@ -32,5 +41,8 @@ app.use(
 
 app.use('/', authRouter)
 app.use('/product', productRouter)
+app.set('socketio', io);
 
-app.listen(PORT, () => console.log(`Server online on port ${PORT}`.bgYellow.bold));
+http.listen(PORT, () => console.log(`Server online on port ${PORT}`.bgYellow.bold));
+
+socketRouter(io);
