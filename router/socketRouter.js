@@ -10,8 +10,12 @@ module.exports = (io) => {
       io.emit('allProducts', allProducts)
     })
 
-    socket.on('allProducts', async () => {
-      const allProducts = await productSchema.find()
+    socket.on('allProducts', async (data) => {
+
+      const page = data || 0;
+      const productsPerPage = 8;
+
+      const allProducts = await productSchema.find().skip(page * productsPerPage).limit(productsPerPage)
       io.emit('allProducts', allProducts)
     })
 
