@@ -17,6 +17,10 @@ const productSchema = new Schema({
   },
   reviews: {
     type: Array
+  },
+  cartQty: {
+    type: Number,
+    default: 1,
   }
 })
 

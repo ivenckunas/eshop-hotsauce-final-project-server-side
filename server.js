@@ -5,7 +5,6 @@ const colors = require('colors');
 const cors = require('cors');
 const mongoose = require("mongoose")
 const authRouter = require('./router/authRouter')
-const productRouter = require('./router/productRouter')
 const session = require("express-session");
 const socketRouter = require('./router/socketRouter');
 const http = require('http').createServer(app);
@@ -40,7 +39,6 @@ app.use(
 );
 
 app.use('/', authRouter)
-app.use('/product', productRouter)
 app.set('socketio', io);
 
 http.listen(PORT, () => console.log(`Server online on port ${PORT}`.bgYellow.bold));

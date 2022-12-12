@@ -27,9 +27,11 @@ module.exports = (io) => {
     })
 
     socket.on('editProduct', async (data) => {
-      const { id } = data
-      const productToEdit = await productSchema.findById({ _id: id })
-      io.to(socket.id).emit('editProduct', productToEdit)
+      const { isAdmin } = data
+      if (isAdmin === true) {
+        const productToEdit = await productSchema.findById({ _id: data.id.id })
+        io.to(socket.id).emit('editProduct', productToEdit)
+      }
     })
 
 
@@ -38,14 +40,17 @@ module.exports = (io) => {
       const id = data.id.id
       const updatedProduct = await productSchema.findOneAndUpdate({ _id: id }, { image: image, title: title, price: price, info: info })
       io.to(socket.id).emit('editProduct', updatedProduct)
+
     })
 
 
     socket.on('addProduct', async (data) => {
-      const { image, title, price, info } = data
-      const newProduct = new productSchema({ image, title, price, info })
-      await newProduct.save();
-      io.to(socket.id).emit('addProduct', newProduct)
+      const { image, title, price, info, isAdmin } = data
+      if (isAdmin === true) {
+        const newProduct = new productSchema({ image, title, price, info })
+        await newProduct.save();
+        io.to(socket.id).emit('addProduct', newProduct)
+      }
     })
 
 
@@ -61,6 +66,20 @@ module.exports = (io) => {
       io.to(socket.id).emit('searchProducts', sorted)
     })
 
+
+    // socket.on('cartAdd', async (data) => {
+    //   const updatedProduct = await productSchema.findOneAndUpdate({ _id: data }, { $inc: { cartQty: +1 } })
+    //   io.emit('cartAdd', updatedProduct)
+    // })
+
+    // socket.on('cartRemove', async (data) => {
+    //   const updatedProduct = await productSchema.findOneAndUpdate({ _id: data }, { $inc: { cartQty: -1 } })
+    //   io.emit('cartRemove', updatedProduct)
+    // })
+
+    socket.on('logout', async () => {
+      await productSchema.updateMany({ cartQty: 1 })
+    })
 
 
   })
